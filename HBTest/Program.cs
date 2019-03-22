@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,30 +15,60 @@ namespace HBTest
 
         static void Main(string[] args)
         {
-            Azure azure = new Azure(accountName, keyValue);
-            var fileStream = azure.Download("video", "test.mp4");
 
-            Extractor extractor = new Extractor();
-
-            var outStream = extractor.ExtractAudio(fileStream);
-            azure.Upload("audio", "audio.wav", outStream).Wait();
-
-            int index = 1;
-            var frameList = extractor.ExtractFrames(fileStream).ToList();
-
-
-            azure.UploadList("frames", frameList);
-
-            //foreach (var frame in frameList)
-            //{
-            //    var blobName = "frame" + index + ".png";
-                
-            //}
-
-
-
+            VIdeoToAudio();
+            VideoToFrames();
+                                 
             Console.WriteLine("Done! Press any key...");
             Console.ReadKey();
+        }
+
+        private static void VIdeoToAudio()
+        {
+            try
+            {
+                Azure azure = new Azure(accountName, keyValue);
+                var fileStream = azure.Download("video", "test.mp4").Result;
+
+                Extractor extractor = new Extractor();
+
+                var outStream = extractor.ExtractAudio(fileStream);
+                azure.Upload("audio", "audio.wav", outStream).Wait();
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception("Error: " + e.Message);
+            }
+            
+            
+        }
+
+        private static void VideoToFrames()
+        {
+            try
+            {
+                Azure azure = new Azure(accountName, keyValue);
+                var fileStream = azure.Download("video", "test.mp4").Result;
+
+                Extractor extractor = new Extractor();
+
+                var frameList = extractor.ExtractFrames(fileStream).ToList();
+                int index = 1;
+                foreach (var frame in frameList)
+                {
+                    string name = "frame" + index + ".png";
+                    var frameBuffer = frame.ToArray();
+                    azure.Upload("frames", name, frameBuffer).Wait();
+                    index++;
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception("Error: " + e.Message);
+            }
+            
         }
 
     }

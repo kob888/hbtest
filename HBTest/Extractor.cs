@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -81,10 +82,10 @@ namespace HBTest
                 data = ms.ToArray();
                 var inputTask = Task.Run(() =>
                 {
+
                     StreamWriter strWrt = new StreamWriter(ffmpeg.StandardInput.BaseStream);
                     strWrt.BaseStream.Write(data, 0, data.Length);
                     ffmpeg.StandardInput.Close();
-                    strWrt.Close();
                 });
 
                 var ffmpeg_Output = ffmpeg.StandardOutput.BaseStream;

@@ -2,6 +2,8 @@
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,19 +27,17 @@ namespace HBTest
         }
 
         
-        public MemoryStream Download(string containerName, string blobName)
+        public async Task<MemoryStream> Download(string containerName, string blobName)
         {
             CloudBlobClient blobClientDownload = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer containerDownload = blobClientDownload.GetContainerReference(containerName);
             CloudBlockBlob blockBlobDownload = containerDownload.GetBlockBlobReference(blobName);
+            var fileStream = new MemoryStream();
+            await blockBlobDownload.DownloadToStreamAsync(fileStream);
 
-            using (var fileStream = new MemoryStream())
-            {
-                blockBlobDownload.DownloadToStreamAsync(fileStream).Wait();
-
-                return fileStream;
-            }
+            return fileStream;
         }
+
 
         public async Task Upload(string containerName, string blobName, MemoryStream outputFile)
         {
@@ -48,34 +48,20 @@ namespace HBTest
             outputFile.Position = 0;
             using (outputFile)
             {
-                await blockBlobUpload.UploadFromStreamAsync(outputFile);
+                await blockBlobUpload.UploadFromStreamAsync(outputFile);                
             }
-
         }
 
-        public void UploadList(string containerName, List<MemoryStream> outputFileList)
+
+        public async Task Upload(string containerName, string blobName, byte[] frame)
         {
             CloudBlobClient blobClientUpload = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer containerUpload = blobClientUpload.GetContainerReference(containerName);
-            ///CloudBlockBlob blockBlobUpload = containerUpload.GetBlockBlobReference(blobName);
-            int index = 1;
-            //outputFile.Position = 0;
-            //using (outputFile)
-            //{
-            //    await blockBlobUpload.UploadFromStreamAsync(outputFile);
-            //}
+            CloudBlockBlob blockBlobUpload = containerUpload.GetBlockBlobReference(blobName);
 
-            Parallel.ForEach(outputFileList, async file =>
-            {
-                CloudBlockBlob blockBlobUpload = containerUpload.GetBlockBlobReference("frame" + index + ".png");
-                await  blockBlobUpload.UploadFromStreamAsync(file);
-
-                file.Close();
-
-                index++;
-            });
-
+            await blockBlobUpload.UploadFromByteArrayAsync(frame, 0, frame.Length);
         }
+
 
     }
 }
