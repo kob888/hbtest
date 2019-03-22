@@ -10,7 +10,7 @@ namespace HBTest
     class Program
     {
         private static readonly string accountName = "hbgittest";
-        private static readonly string keyValue = "up4w+hjVi6jo+yXPrwi1t16G8sBPWZEocCqRMSzlaaJ2nntWfXvd3Ondk9J52FlxSLOm21fZRe26w14UcMQjLA==";
+        private static readonly string keyValue = "";    // необходимо добавить ключ
         
 
         static void Main(string[] args)
