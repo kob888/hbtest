@@ -9,8 +9,8 @@ namespace HBTest
 {
     class Program
     {
-        private static readonly string accountName = "vladazuretest";
-        private static readonly string keyValue = "CAhhTPAQyrEYZ7hdzF/5MUt5s3oA66iIkT6rTWEjWfMu7Ds0qzj+QCqCv/o693ZKB2SjPseZgKSDtYMXz12JwQ==";
+        private static readonly string accountName = "hbgittest";
+        private static readonly string keyValue = "up4w+hjVi6jo+yXPrwi1t16G8sBPWZEocCqRMSzlaaJ2nntWfXvd3Ondk9J52FlxSLOm21fZRe26w14UcMQjLA==";
         
 
         static void Main(string[] args)
@@ -27,13 +27,15 @@ namespace HBTest
         {
             try
             {
+                Console.WriteLine("Extract audio. Process...");
                 Azure azure = new Azure(accountName, keyValue);
-                var fileStream = azure.Download("video", "test.mp4").Result;
+                var fileStream = azure.Download("videos", "test.mp4").Result;
 
                 Extractor extractor = new Extractor();
 
                 var outStream = extractor.ExtractAudio(fileStream);
-                azure.Upload("audio", "audio.wav", outStream).Wait();
+                azure.Upload("audios", "audio.wav", outStream).Wait();
+                Console.WriteLine("Extract audio is completed.");
             }
             catch (Exception e)
             {
@@ -48,8 +50,9 @@ namespace HBTest
         {
             try
             {
+                Console.WriteLine("Extract frames. Process...");
                 Azure azure = new Azure(accountName, keyValue);
-                var fileStream = azure.Download("video", "test.mp4").Result;
+                var fileStream = azure.Download("videos", "test.mp4").Result;
 
                 Extractor extractor = new Extractor();
 
@@ -62,6 +65,7 @@ namespace HBTest
                     azure.Upload("frames", name, frameBuffer).Wait();
                     index++;
                 }
+                Console.WriteLine("Extract frames is completed.");
             }
             catch (Exception e)
             {

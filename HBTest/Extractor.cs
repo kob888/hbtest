@@ -13,7 +13,7 @@ namespace HBTest
     {
         MemoryStream memoryString = new MemoryStream();
         byte[] data = null;
-
+        string ffmpeg_path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "ffmpeg\\ffmpeg.exe");
 
         public MemoryStream ExtractAudio(MemoryStream ms)
         {
@@ -30,10 +30,10 @@ namespace HBTest
 
 
         private MemoryStream WavFromVideoStream(MemoryStream ms)
-        {
+        {            
             Process ffmpeg = new Process();
             ffmpeg.StartInfo.Arguments = "-i - -ac 2 -f wav -";
-            ffmpeg.StartInfo.FileName = "ffmpeg.exe";
+            ffmpeg.StartInfo.FileName = ffmpeg_path;
             ffmpeg.StartInfo.RedirectStandardInput = true;
             ffmpeg.StartInfo.RedirectStandardOutput = true;
             ffmpeg.StartInfo.RedirectStandardError = true;
@@ -67,7 +67,7 @@ namespace HBTest
         {
             Process ffmpeg = new Process();
             ffmpeg.StartInfo.Arguments = "-i - -f image2pipe -c:v mjpeg -q:v 2 -vf fps=1/3 pipe:1";
-            ffmpeg.StartInfo.FileName = "ffmpeg.exe";
+            ffmpeg.StartInfo.FileName = ffmpeg_path;
             ffmpeg.StartInfo.RedirectStandardInput = true;
             ffmpeg.StartInfo.RedirectStandardOutput = true;
             ffmpeg.StartInfo.RedirectStandardError = true;
